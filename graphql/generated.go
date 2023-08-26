@@ -8,7 +8,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"graphql-template/graph/model"
+	"graphql-template/graphql/model"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -80,7 +80,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateUser(ctx context.Context, input model.NewUserInput) (*model.User, error)
+	CreateUser(ctx context.Context, input model.NewUserInput) (string, error)
 	UpdateUser(ctx context.Context, id string, input model.UpdateUserInput) (*model.User, error)
 	DeleteUser(ctx context.Context, input model.DeleteUserInput) (*model.User, error)
 	CreateItem(ctx context.Context, input model.NewItemInput) (*model.Item, error)
@@ -919,9 +919,9 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.User)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgraphqlᚑtemplateᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {

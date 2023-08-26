@@ -24,6 +24,7 @@ type NewItemInput struct {
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
 	Image       string  `json:"image"`
+	User        *User   `json:"user"`
 }
 
 type NewUserInput struct {

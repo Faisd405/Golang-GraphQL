@@ -21,13 +21,6 @@ type Item {
   user: User!
 }
 
-type Query {
-  users: [User!]!
-  user(id: ID!): User!
-  items: [Item!]!
-  item(id: ID!): Item!
-}
-
 input NewUserInput {
   name: String!
   username: String!
@@ -64,8 +57,15 @@ input DeleteItemInput {
   id: ID!
 }
 
+type Query {
+  users: [User!]!
+  user(id: ID!): User!
+  items: [Item!]!
+  item(id: ID!): Item!
+}
+
 type Mutation {
-  createUser(input: NewUserInput!): User!
+  createUser(input: NewUserInput!): String!
   updateUser(id: ID!, input: UpdateUserInput!): User!
   deleteUser(input: DeleteUserInput!): User!
 
