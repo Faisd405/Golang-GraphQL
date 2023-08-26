@@ -17,12 +17,12 @@ type Item struct {
 // #2
 func (item Item) SaveItem() int64 {
 	//#3
-	stmt, err := database.Db.Prepare("INSERT INTO items(name, description, price, image) VALUES(?,?,?,?)")
+	stmt, err := database.Db.Prepare("INSERT INTO items(name, description, price, image, user_id) VALUES(?,?,?,?,?)")
 	if err != nil {
 		log.Fatal(err)
 	}
 	//#4
-	res, err := stmt.Exec(item.Name, item.Description, item.Price, item.Image)
+	res, err := stmt.Exec(item.Name, item.Description, item.Price, item.Image, item.User.ID)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,11 +36,12 @@ func (item Item) SaveItem() int64 {
 }
 
 func GetAllItems() []Item {
-	stmt, err := database.Db.Prepare("SELECT id, name, description, price, image FROM items")
+	stmt, err := database.Db.Prepare("SELECT I.id, I.name, I.description, I.price, I.image, I.user_id, U.username FROM items I inner join users U on I.user_id = U.id")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer stmt.Close()
+
 	rows, err := stmt.Query()
 	if err != nil {
 		log.Fatal(err)
@@ -48,11 +49,17 @@ func GetAllItems() []Item {
 	defer rows.Close()
 
 	var items []Item
+	var username string
+	var user_id string
 	for rows.Next() {
 		var item Item
-		err := rows.Scan(&item.ID, &item.Name, &item.Description, &item.Price, &item.Image)
+		err := rows.Scan(&item.ID, &item.Name, &item.Description, &item.Price, &item.Image, &user_id, &username)
 		if err != nil {
 			log.Fatal(err)
+		}
+		item.User = &User{
+			ID:       user_id,
+			Username: username,
 		}
 		items = append(items, item)
 	}

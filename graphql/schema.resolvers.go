@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"graphql-template/auth"
 	"graphql-template/graphql/model"
 	"graphql-template/jwt"
 	"graphql-template/models"
@@ -154,15 +155,26 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, input model.Refresh
 
 // CreateItem is the resolver for the createItem field.
 func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItemInput) (*model.Item, error) {
-	log.Println("Create a new ITEM")
+	user := auth.ForContext(ctx)
+	if user == nil {
+		return nil, fmt.Errorf("ACCESS DENIED")
+	}
+
 	item := &models.Item{
 		Name:        input.Name,
 		Description: input.Description,
 		Price:       input.Price,
 		Image:       input.Image,
+		User:        user,
 	}
 
 	itemId := item.SaveItem()
+
+	itemUser := &model.User{
+		ID:       user.ID,
+		Name:     user.Name,
+		Username: user.Username,
+	}
 
 	return &model.Item{
 		ID:          strconv.FormatInt(itemId, 10),
@@ -170,6 +182,7 @@ func (r *mutationResolver) CreateItem(ctx context.Context, input model.NewItemIn
 		Description: item.Description,
 		Price:       item.Price,
 		Image:       item.Image,
+		User:        itemUser,
 	}, nil
 }
 
@@ -238,12 +251,17 @@ func (r *queryResolver) Items(ctx context.Context) ([]*model.Item, error) {
 	dbItems := models.GetAllItems()
 
 	for _, item := range dbItems {
+		itemUser := &model.User{
+			ID:   item.User.ID,
+			Name: item.User.Name,
+		}
 		resultItems = append(resultItems, &model.Item{
 			ID:          item.ID,
 			Name:        item.Name,
 			Description: item.Description,
 			Price:       item.Price,
 			Image:       item.Image,
+			User:        itemUser,
 		})
 	}
 
