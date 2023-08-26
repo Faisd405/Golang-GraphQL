@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"graphql-template/graphql/model"
 	"graphql-template/jwt"
 	"graphql-template/models"
@@ -118,6 +119,37 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, input model.DeleteUse
 
 	// return nil, fmt.Errorf("User not found")
 	return nil, nil
+}
+
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, input model.Login) (string, error) {
+	var user models.User
+	user.Username = input.Username
+	user.Password = input.Password
+	if !user.Authenticate() {
+		return "", fmt.Errorf("USERNAME OR PASSWORD INCORRECT")
+	}
+
+	token, err := jwt.GenerateToken(user.Username)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return token, nil
+}
+
+// RefreshToken is the resolver for the refreshToken field.
+func (r *mutationResolver) RefreshToken(ctx context.Context, input model.RefreshTokenInput) (string, error) {
+	username, err := jwt.ParseToken(input.Token)
+	if err != nil {
+		return "", fmt.Errorf("INVALID TOKEN")
+	}
+
+	token, err := jwt.GenerateToken(username)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return token, nil
 }
 
 // CreateItem is the resolver for the createItem field.

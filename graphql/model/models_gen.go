@@ -19,6 +19,11 @@ type Item struct {
 	User        *User   `json:"user"`
 }
 
+type Login struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 type NewItemInput struct {
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
@@ -32,6 +37,10 @@ type NewUserInput struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type RefreshTokenInput struct {
+	Token string `json:"token"`
 }
 
 type UpdateItemInput struct {

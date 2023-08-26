@@ -49,6 +49,15 @@ input UpdateItemInput {
   image: String
 }
 
+input Login {
+  username: String!
+  password: String!
+}
+
+input RefreshTokenInput{
+  token: String!
+}
+
 input DeleteUserInput {
   id: ID!
 }
@@ -68,6 +77,9 @@ type Mutation {
   createUser(input: NewUserInput!): String!
   updateUser(id: ID!, input: UpdateUserInput!): User!
   deleteUser(input: DeleteUserInput!): User!
+  
+  login(input: Login!): String!
+  refreshToken(input: RefreshTokenInput!): String!
 
   createItem(input: NewItemInput!): Item!
   updateItem(id: ID!, input: UpdateItemInput!): Item!
